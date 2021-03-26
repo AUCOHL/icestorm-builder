@@ -1,0 +1,8 @@
+#!/bin/sh
+if [ "$1" = "" ]; then
+    echo "No tag given."
+    exit 64
+fi
+
+git tag $1
+git push --atomic origin master $1

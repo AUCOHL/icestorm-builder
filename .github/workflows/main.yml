@@ -1,0 +1,30 @@
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - '0.*'
+
+name: CI
+
+jobs:
+  build_linux:
+    name: Build/Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get the version
+        id: get_version
+        run: |
+         export VERSION_NUM=$(ruby -e "print '$GITHUB_REF'.split(/[\/\.]/).select {|v| v == v.to_i.to_s }.join('.')")
+         echo ::set-output name=value::${VERSION_NUM}
+      - name: Build project
+        run: |
+          make
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        run: |
+          go get -u github.com/tcnksm/ghr
+          export PATH=$PATH:$(go env GOPATH)/bin
+          ghr -u Cloud-V -r icestorm-builder -t ${{ github.token }} ${{ steps.get_version.outputs.value }} ./icestorm.tar.xz
+          
