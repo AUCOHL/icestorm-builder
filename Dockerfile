@@ -1,4 +1,4 @@
-FROM node:12 AS base
+FROM public.ecr.aws/bitnami/node:12 AS base
 
 # Essentials
 RUN apt-get update
@@ -50,7 +50,7 @@ RUN env PREFIX=${APPDIR}/usr make install
 WORKDIR /
 
 #----
-FROM base AS Tarball
+FROM base AS tarball
 RUN $INST pv
 RUN tar -cf /icestorm.tar -C /AppDir ./usr
 RUN pv -f /icestorm.tar | xz > icestorm.tar.xz
